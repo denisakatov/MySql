@@ -26,9 +26,6 @@ select * from catalogs;
 CREATE VIEW vie  as SELECT p.name, c.name as 'type' from products as p left join catalogs AS c on p.catalog_id = c.id;
 select * from vie;
 
-select name from catalogs where id = 3;
-
-CREATE VIEW vie as 
 
 
 
@@ -64,6 +61,15 @@ SELECT NOW(), hello()//
  * Допустимо присутствие обоих полей или одно из них. Ситуация, когда оба поля принимают неопределенное значение NULL неприемлема.
  * Используя триггеры, добейтесь того, чтобы одно из этих полей или оба поля были заполнены.
  * При попытке присвоить полям NULL-значение необходимо отменить операцию.*/
+
+
+CREATE TRIGGER validate_name_description_update BEFORE UPDATE ON products
+FOR EACH ROW BEGIN
+  IF NEW.name IS NULL AND NEW.description IS NULL THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Both name and description are NULL';
+  END IF;
+END//
 
 CREATE TRIGGER check_products BEFORE INSERT on products
 FOR EACH ROW
